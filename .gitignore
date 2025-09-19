@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.egg-info/
+*.egg
+*.pytest_cache/
+.venv/
+
+# Virtual environment
+.env/
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Kind / Kubernetes local cluster files
+kind-config.yaml
+.kube/
+*.kubeconfig
+# Kind binary
+kind
+
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# IDEs
+.vscode/
+.idea/
