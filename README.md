@@ -44,7 +44,7 @@ It allows you to experiment with Kubernetes safely on your own machine without n
 
 - To delete the local cluster:
     ```bash
-    kind delete cluster --name k8s-lab
+    ./kind delete cluster --name k8s-lab
     ```
 - To deactivate Python environment:
     ```bash
