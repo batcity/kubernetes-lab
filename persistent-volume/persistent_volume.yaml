@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-demo
+spec:
+  containers:
+  - name: web
+    image: busybox
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /www/cgi-bin /data
+        COUNT_FILE=/data/count.txt
+        [ -f $COUNT_FILE ] || echo 0 > $COUNT_FILE
+
+        cat << 'EOF' > /www/cgi-bin/counter.cgi
+        #!/bin/sh
+        COUNT_FILE=/data/count.txt
+        COUNT=$(cat $COUNT_FILE)
+        COUNT=$((COUNT + 1))
+        echo $COUNT > $COUNT_FILE
+
+        echo "Content-Type: text/html"
+        echo
+        echo "<h1>Persistent counter</h1>"
+        echo "<p>Refresh count: $COUNT</p>"
+        EOF
+
+        chmod +x /www/cgi-bin/counter.cgi
+        httpd -f -p 8080 -h /www
+    ports:
+      - containerPort: 8080
+    volumeMounts:
+      - mountPath: /data
+        name: storage
+  volumes:
+    - name: storage
+      persistentVolumeClaim:
+        claimName: web-pvc
