@@ -17,6 +17,9 @@ Each concept has its own folder with a Python script and README explaining the i
 - [ConfigMaps](./configmaps/README.md)
 - [Secrets](./secrets/README.md)
 
+### Storage
+- [Persistent Volumes](./persistent-volume/README.md)
+
 ### Multi-tenancy
 - [Namespaces](./namespaces/README.md)
 
@@ -39,6 +42,42 @@ Each concept has its own folder with a Python script and README explaining the i
 
 💡 **Note:** This lab uses [**kind**](https://kind.sigs.k8s.io/) (Kubernetes IN Docker) to create a lightweight, local Kubernetes cluster.
 It allows you to experiment with Kubernetes safely on your own machine without needing a cloud account or VM.  
+
+## Running YAML Manifests
+
+In addition to the Python examples, this lab also includes Kubernetes YAML manifests.
+
+### Apply a manifest
+
+Use `kubectl apply` to create resources:
+
+```bash
+kubectl apply -f <path-to-yaml>
+```
+
+### Examples
+
+```bash
+kubectl apply -f deployments/deployments.yaml
+kubectl apply -f persistent-volume/persisent_volume_claim.yaml
+kubectl apply -f persistent-volume/persistent_volume.yaml
+```
+
+### Verify resources
+
+```bash
+kubectl get pods
+kubectl get deployments
+kubectl get pvc
+```
+
+### Delete resources
+
+```bash
+kubectl delete -f <path-to-yaml>
+```
+
+💡 Note: Make sure your local cluster is running (`kubectl get nodes`) before applying manifests.
 
 ## Cleanup
 
