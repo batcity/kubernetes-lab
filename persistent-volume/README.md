@@ -1,6 +1,6 @@
 # Persistent Volume
 
-Persistent volume is a piece of storage in the cluster that's either provisioned by an administrator or dynamically provisioned. It is a resource in the cluster just like a node, they have an independent lifecycle different from the pods that consume them.
+Persistent volume is a piece of storage in the cluster that's either provisioned by an administrator or dynamically provisioned. It's a resource in the cluster just like a node, they have an independent lifecycle different from the pods that consume them.
 
 You can use the following command to view the persistent volumes in a cluster
 
