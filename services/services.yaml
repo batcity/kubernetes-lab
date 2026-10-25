@@ -3,18 +3,28 @@ kind: Service
 metadata:
   name: services-demo
 spec:
+  selector:
+    app: web # this will point to the deployment below
   ports:
-  - name: service-port
+  - name: web-port
     port: 80
-
 ---
-
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: services-demo-pod
+  name: web
 spec:
-  containers:
-  - name: busybox
-    image: busybox
-    command: ["sleep", "36000"]
+  replicas: 3                      # how many Pods
+  selector:
+    matchLabels:
+      app: web
+  template:                         # Pod template
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.25
+          ports:
+            - containerPort: 80

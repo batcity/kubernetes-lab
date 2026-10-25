@@ -35,7 +35,6 @@ KIND_BINARY="./kind"
 if [ ! -f "$KIND_BINARY" ]; then
     echo "⚠️ kind not found. Installing locally to the repo folder..."
 
-    # Detect OS and architecture
     OS=$(uname | tr '[:upper:]' '[:lower:]')
     ARCH=$(uname -m)
 
@@ -64,24 +63,42 @@ if [ ! -f "$KIND_BINARY" ]; then
 
     KIND_URL="https://kind.sigs.k8s.io/dl/v0.25.0/kind-$OS-$KIND_ARCH"
 
-    # Debug info
     echo "🔹 Detected OS: $OS"
     echo "🔹 Detected Architecture: $ARCH"
     echo "🔹 Using kind binary architecture: $KIND_ARCH"
     echo "🔹 Download URL: $KIND_URL"
 
-    # Download and make executable
     curl -Lo "$KIND_BINARY" "$KIND_URL"
     chmod +x "$KIND_BINARY"
 
-    # Verify downloaded binary
     echo "🔹 Downloaded kind binary info:"
     file "$KIND_BINARY"
 fi
 
-# 6️⃣ Create Kubernetes cluster
-if "$KIND_BINARY" get clusters | grep -q "k8s-lab"; then
-    echo "ℹ️ Cluster 'k8s-lab' already exists."
+# 6️⃣ Create or restart Kubernetes cluster
+CONTAINER_NAME="k8s-lab-control-plane"
+
+if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "ℹ️ Cluster 'k8s-lab' is already running."
+elif docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "🔄 Cluster container exists but is stopped. Starting it..."
+    docker start "$CONTAINER_NAME" >/dev/null
+    
+    # Re-sync host port & kubeconfig
+    "$KIND_BINARY" export kubeconfig --name k8s-lab >/dev/null 2>&1
+    
+    echo "⏳ Waiting for control plane to initialize..."
+    retries=15
+    until kubectl get nodes >/dev/null 2>&1 || [ $retries -eq 0 ]; do
+        sleep 2
+        ((retries--))
+    done
+
+    if [ $retries -eq 0 ]; then
+        echo "⚠️ Cluster took too long to respond. Resetting cluster..."
+        "$KIND_BINARY" delete cluster --name k8s-lab
+        "$KIND_BINARY" create cluster --name k8s-lab
+    fi
 else
     echo "🚀 Creating Kubernetes cluster 'k8s-lab'..."
     "$KIND_BINARY" create cluster --name k8s-lab
